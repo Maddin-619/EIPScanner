@@ -30,7 +30,7 @@ namespace sockets {
 		std::vector<uint8_t> Receive(size_t size) const override ;
 
 		void SendTo(const std::vector <uint8_t> &data, const EndPoint& endPoint) const;
-		static std::vector<uint8_t> ReceiveFrom(const int socketFd, size_t size, EndPoint& endPoint);
+		static std::vector<uint8_t> ReceiveFrom(const int socketFd, size_t size);
 	};
 }
 }

@@ -95,7 +95,7 @@ namespace sockets {
 		return recvBuffer;
 	}
 
-	std::vector<uint8_t> UDPSocket::ReceiveFrom(const int socketFd, size_t size, EndPoint& endPoint) {
+	std::vector<uint8_t> UDPSocket::ReceiveFrom(const int socketFd, size_t size) {
 		std::vector<uint8_t> recvBuffer(size);
 		struct sockaddr_in addr;
 		socklen_t addrFromLength = sizeof(addr);
@@ -105,7 +105,6 @@ namespace sockets {
 			throw std::system_error(BaseSocket::getLastError(), BaseSocket::getErrorCategory());
 		}
 
-		endPoint = EndPoint(addr);
 		return recvBuffer;
 	}
 
@@ -127,10 +126,7 @@ namespace sockets {
 
 			if (FD_ISSET(socket->getSocketFd(), &recvSet)) {
 				std::vector<uint8_t> data;
-				EndPoint endPoint("", 0);
-				data = UDPSocket::ReceiveFrom(socket->getSocketFd(), 8192, endPoint);
-				fprintf(stderr, "%s: %d,  UDP ReceiveFrom %s (%d size)\n", __FILE__, __LINE__,
-					endPoint.toString().c_str(), data.size());
+				data = UDPSocket::ReceiveFrom(socket->getSocketFd(), 8192);
 
 				udpReceiveHandler(data);
 			}

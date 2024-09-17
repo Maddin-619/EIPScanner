@@ -143,7 +143,7 @@ namespace eipScanner {
 //							si->getRemoteEndPoint().getHost(), endPoint.getPort());
 				    auto socket = findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), endPoint.getPort()));
 				    ioConnection->_serverSocket = std::move(socket);
-				    fprintf(stderr, "%s: %d,  ********************************************\n", __FILE__, __LINE__);
+ 				    Logger(LogLevel::TRACE) << __FILE__ << ": " << __LINE__ << "********************************************";
 				} else {
 					ioConnection->_serverSocket = std::make_shared<UDPSocket>(endPoint);
 				}
@@ -221,7 +221,7 @@ namespace eipScanner {
 		UDPSocket::select(_udpServerSocket, timeout, [this](std::vector<uint8_t> recvData){
 			CommonPacket commonPacket;
 			commonPacket.expand(recvData);
-			fprintf(stderr, "%s: %d, notifyReceiveData size: %d (socket fd=%d)\n", __FILE__, __LINE__, recvData.size(), _udpServerSocket->getSocketFd());
+ 			Logger(LogLevel::TRACE) << "notifyReceiveData size: " << recvData.size() <<" (socket fd="<< _udpServerSocket->getSocketFd() <<")";
 			// TODO: Check TypeIDs and sequence of the packages
 			Buffer buffer(commonPacket.getItems().at(0).getData());
 			cip::CipUdint connectionId;
@@ -230,14 +230,13 @@ namespace eipScanner {
 			auto io = _connectionMap.find(connectionId);
 			if (io != _connectionMap.end()) {
 				io->second->notifyReceiveData(commonPacket.getItems().at(1).getData());
-				Logger(LogLevel::ERROR) << "Received data from connection T2O_ID=" << std::hex
-							<< connectionId;
 			} else {
-				for (auto x : _connectionMap) {
-					fprintf(stderr, "%s: %d,  0x%x\n", __FILE__, __LINE__, x.first);
-				}
 				Logger(LogLevel::ERROR) << "Received data from unknown connection T2O_ID=" << std::hex
 							<< connectionId;
+ 				Logger(LogLevel::TRACE) << "Current connections:";
+				for (auto x : _connectionMap) {
+ 					Logger(LogLevel::TRACE) << "T2O_ID=" << std::hex << x.first;
+				}
 			}
 		});
 
