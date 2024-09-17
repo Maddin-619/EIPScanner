@@ -142,10 +142,10 @@ namespace eipScanner {
 //					ioConnection->_serverSocket = std::make_unique<UDPSocket>(
 //							si->getRemoteEndPoint().getHost(), endPoint.getPort());
 				    auto socket = findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), endPoint.getPort()));
-				    ioConnection->_serverSocket = std::make_unique<UDPSocket>(*socket.get());
+				    ioConnection->_serverSocket = std::move(socket);
 				    fprintf(stderr, "%s: %d,  ********************************************\n", __FILE__, __LINE__);
 				} else {
-					ioConnection->_serverSocket = std::make_unique<UDPSocket>(endPoint);
+					ioConnection->_serverSocket = std::make_shared<UDPSocket>(endPoint);
 				}
 				// findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT));
 				sockets::EndPoint remoteEndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT);
@@ -154,7 +154,7 @@ namespace eipScanner {
 			} else {
 				sockets::EndPoint remoteEndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT);
 				auto socket = findOrCreateSocket(remoteEndPoint);
-				ioConnection->_serverSocket = std::make_unique<UDPSocket>(*socket.get());
+				ioConnection->_serverSocket = std::move(socket);
 				ioConnection->_remoteEndPoint = remoteEndPoint;
 //			    auto socket = findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT));
 //			    ioConnection->_serverSocket = std::make_unique<UDPSocket>(*socket.get());
