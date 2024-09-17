@@ -139,32 +139,24 @@ namespace eipScanner {
 				sockAddrBuffer >> endPoint;
 
 				if (endPoint.getHost() == "0.0.0.0") {
-//					ioConnection->_serverSocket = std::make_unique<UDPSocket>(
-//							si->getRemoteEndPoint().getHost(), endPoint.getPort());
-				    auto socket = findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), endPoint.getPort()));
+				    auto socket = getServerSocket();
 				    ioConnection->_serverSocket = std::move(socket);
  				    Logger(LogLevel::TRACE) << __FILE__ << ": " << __LINE__ << "********************************************";
 				} else {
 					ioConnection->_serverSocket = std::make_shared<UDPSocket>(endPoint);
 				}
-				// findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT));
 				sockets::EndPoint remoteEndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT);
-				findOrCreateSocket(remoteEndPoint);
+				getServerSocket();
 				ioConnection->_remoteEndPoint = remoteEndPoint;
 			} else {
 				sockets::EndPoint remoteEndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT);
-				auto socket = findOrCreateSocket(remoteEndPoint);
+				auto socket = getServerSocket();
 				ioConnection->_serverSocket = std::move(socket);
 				ioConnection->_remoteEndPoint = remoteEndPoint;
-//			    auto socket = findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT));
-//			    ioConnection->_serverSocket = std::make_unique<UDPSocket>(*socket.get());
-//				// ioConnection->_socket = std::make_unique<UDPSocket>(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT);
 			}
 
 			Logger(LogLevel::INFO) << "Open UDP socket to send data to "
 					<< ioConnection->_serverSocket->getRemoteEndPoint().toString();
-
-//			findOrCreateSocket(sockets::EndPoint(si->getRemoteEndPoint().getHost(), EIP_DEFAULT_IMPLICIT_PORT));
 
 			auto result = _connectionMap
 					.insert(std::make_pair(response.getT2ONetworkConnectionId(), ioConnection));
@@ -252,7 +244,7 @@ namespace eipScanner {
 		}
 	}
 
-	UDPBoundSocket::SPtr ConnectionManager::findOrCreateSocket(const sockets::EndPoint& endPoint) {
+	UDPBoundSocket::SPtr ConnectionManager::getServerSocket() {
 
 		if (!_udpServerSocket.get()) {
 		    _udpServerSocket = std::make_shared<UDPBoundSocket>("", EIP_DEFAULT_IMPLICIT_PORT);
