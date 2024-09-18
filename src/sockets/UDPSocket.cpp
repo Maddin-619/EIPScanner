@@ -60,7 +60,7 @@ namespace sockets {
 #endif
 		auto addr = _remoteEndPoint.getAddr();
 		int count = sendto(_sockedFd, (char*)data.data(), data.size(), flags,
-				(struct sockaddr *)&addr, sizeof(addr));
+				reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
 		if (count < data.size()) {
 			throw std::system_error(BaseSocket::getLastError(), BaseSocket::getErrorCategory());
 		}
@@ -77,7 +77,7 @@ namespace sockets {
 
 		auto addr = endPoint.getAddr();
 		int count = sendto(_sockedFd, (char*)data.data(), data.size(), flags,
-				(struct sockaddr *)&addr, sizeof(addr));
+				reinterpret_cast<sockaddr *>(&addr), sizeof(addr));
 		if (count < data.size()) {
 			throw std::system_error(BaseSocket::getLastError(), BaseSocket::getErrorCategory());
 		}

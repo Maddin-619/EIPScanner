@@ -23,8 +23,7 @@ namespace sockets {
 	BaseSocket::BaseSocket(EndPoint endPoint)
 			: _sockedFd(0)
 			, _remoteEndPoint(std::move(endPoint))
-			, _recvTimeout(0)
-			/*, _beginReceiveHandler()*/ {
+			, _recvTimeout(0) {
 
 	}
 
@@ -109,47 +108,6 @@ namespace sockets {
 		return tv;
 	}
 
-//	void BaseSocket::setBeginReceiveHandler(BaseSocket::BeginReceiveHandler handler) {
-//		_beginReceiveHandler = std::move(handler);
-//	}
-
-//	void BaseSocket::BeginReceive() {
-//		_beginReceiveHandler(*this);
-//	}
-/*
-	void BaseSocket::select(std::vector<BaseSocket::SPtr> sockets, std::chrono::milliseconds timeout) {
-		BaseSocket::SPtr socketWithMaxFd = *std::max_element(sockets.begin(), sockets.end(), [](auto sock1, auto sock2) {
-			return sock1->getSocketFd() < sock2->getSocketFd();
-		});
-
-		auto startTime = std::chrono::steady_clock::now();
-		auto stopTime = startTime + timeout;
-		int ready;
-		do {
-			timeval tv = makePortableInterval(std::chrono::duration_cast<std::chrono::milliseconds>(stopTime-startTime));
-
-			fd_set recvSet;
-			FD_ZERO(&recvSet);
-			for (auto& sock : sockets) {
-				FD_SET(sock->getSocketFd(), &recvSet);
-			}
-
-			ready = ::select(socketWithMaxFd->getSocketFd() + 1, &recvSet, NULL, NULL, &tv);
-			if (ready < 0) {
-				throw std::system_error(BaseSocket::getLastError(), BaseSocket::getErrorCategory());
-			}
-
-			for (auto& sock : sockets) {
-				if (FD_ISSET(sock->getSocketFd(), &recvSet)) {
-					sock->BeginReceive();
-					continue;
-				}
-			}
-
-			startTime = std::chrono::steady_clock::now();
-		} while(ready > 0);
-	}
-*/
 	const EndPoint &BaseSocket::getRemoteEndPoint() const {
 		return _remoteEndPoint;
 	}

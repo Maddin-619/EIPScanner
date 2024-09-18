@@ -103,7 +103,6 @@ namespace eipScanner {
 		_connectionTimeoutCount += periodInMicroS;
 		if (_connectionTimeoutCount > _connectionTimeoutMultiplier * _t2oAPI) {
 			Logger(LogLevel::WARNING) << "Connection SerialNumber=" << _serialNumber << " is closed by timeout";
-			// _serverSocket.reset();
 			_closeHandle();
 			return false;
 		}
